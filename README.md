@@ -1,19 +1,20 @@
 # iqscope
 
-[![Build & Test](https://img.shields.io/github/actions/workflow/status/fgulde/iq-signal-analyzer/build-test.yml?branch=master&label=Build%20%26%20Test)](https://github.com/fgulde/iq-signal-analyzer/actions/workflows/build-test.yml)
-[![Code Coverage](https://img.shields.io/github/actions/workflow/status/fgulde/iq-signal-analyzer/coverage.yml?branch=master&label=Code%20Coverage)](https://github.com/fgulde/iq-signal-analyzer/actions/workflows/coverage.yml)
+[![Build & Test](https://img.shields.io/github/actions/workflow/status/fgulde/iqscope/build-test.yml?branch=master&label=Build%20%26%20Test)](https://github.com/fgulde/iqscope/actions/workflows/build-test.yml)
 [![Python](https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![codecov](https://codecov.io/gh/fgulde/iq-signal-analyzer/graph/badge.svg)](https://codecov.io/gh/fgulde/iq-signal-analyzer)
-[![Last commit](https://img.shields.io/github/last-commit/fgulde/iq-signal-analyzer)](https://github.com/fgulde/iq-signal-analyzer/commits/master)
-[![License](https://img.shields.io/github/license/fgulde/iq-signal-analyzer)](LICENSE)
+[![codecov](https://codecov.io/gh/fgulde/iqscope/graph/badge.svg)](https://codecov.io/gh/fgulde/iqscope)
+[![Last commit](https://img.shields.io/github/last-commit/fgulde/iqscope)](https://github.com/fgulde/iqscope/commits/master)
+[![License](https://img.shields.io/github/license/fgulde/iqscope)](LICENSE)
 
-Command-line tool for analyzing and demodulating IQ recordings (complex
-baseband) as produced by a software-defined radio or a spectrum analyzer.
+Command line tool for analyzing and demodulating IQ recordings (complex
+baseband) as produced by a software defined radio or a spectrum analyzer.
 
-```
-IQ file  →  Spectral analysis  →  Signal detection  →  Channel filtering  →  Demodulation
-             (FFT / PSD)          (center freq,          (FIR + decimation)   (FM / AM → WAV)
-                                    BW, SNR)
+```mermaid
+flowchart LR
+    A[IQ file] --> B[Spectral analysis<br/>FFT / PSD]
+    B --> C[Signal detection<br/>center frequency, bandwidth, SNR]
+    C --> D[Channel filtering<br/>FIR filter + decimation]
+    D --> E[Demodulation<br/>FM / AM to WAV]
 ```
 
 Given a raw IQ capture, it produces spectrum/spectrogram plots, a report of
@@ -21,16 +22,21 @@ the detected signals (center frequency, bandwidth, SNR), and a demodulated `.wav
 
 ## Current Status
 
-🚧 **Early stage — project scaffold only, no signal-processing functionality yet.**
+**Early stage: project scaffold only, no signal processing functionality yet.**
 
-- [x] Phase 0 — Project scaffold (`pyproject.toml`, tooling, CI, module skeleton)
-- [ ] Phase 1 — IQ reader
-- [ ] Phase 2 — Synthetic signal generator
-- [ ] Phase 3 — Spectral analysis
-- [ ] Phase 4 — Signal detection & parameter estimation
-- [ ] Phase 5 — Filter design & channel selection
-- [ ] Phase 6 — Demodulation
-- [ ] Phase 7 — CLI, plots & documentation
+### Already Implemented
+
+- Phase 0: project scaffold (`pyproject.toml`, tooling, CI, module skeleton)
+
+### Planned
+
+- Phase 1: IQ reader
+- Phase 2: synthetic signal generator
+- Phase 3: spectral analysis
+- Phase 4: signal detection & parameter estimation
+- Phase 5: filter design & channel selection
+- Phase 6: demodulation
+- Phase 7: CLI, plots & documentation
 
 ## Tech Stack
 
@@ -51,8 +57,8 @@ the detected signals (center frequency, bandwidth, SNR), and a demodulated `.wav
 ## Quick Start
 
 ```bash
-git clone https://github.com/fgulde/iq-signal-analyzer.git
-cd iq-signal-analyzer
+git clone https://github.com/fgulde/iqscope.git
+cd iqscope
 
 just setup
 ```
@@ -66,12 +72,6 @@ just test          # pytest + coverage
 just check          # lint + typecheck + test
 ```
 
-`just --list` shows every available recipe. Without `just`, the equivalent
-`uv run ...` commands work too — see the [justfile](justfile).
-
-The CLI entry point (`iqscope`) exists but has no commands wired up yet —
-that lands in Phase 7.
-
 ## Architecture
 
 **Functional core, imperative shell.**
@@ -80,12 +80,30 @@ that lands in Phase 7.
   pure functions: NumPy arrays in, NumPy arrays or value objects out. No file
   I/O, no logging of results, no side effects, no global state.
 - The **shell** (CLI, file access, plot output) is thin and contains no
-  domain logic — it reads input, calls into the core, writes output.
+  domain logic. It reads input, calls into the core, and writes output.
 
 Dependencies point inward: the core knows nothing about the CLI or file
 formats. Where a core component needs something from the outside (e.g. a
 source of samples), that's expressed via a `typing.Protocol`, not a concrete
 type.
+
+```mermaid
+flowchart LR
+    subgraph Shell[Imperative shell]
+        direction LR
+        CLI[CLI]
+        FileIO[File access]
+        Plots[Plot output]
+    end
+    subgraph Core[Functional core]
+        direction LR
+        Spectral[Spectral analysis]
+        Detect[Detection]
+        Filter[Filtering]
+        Demod[Demodulation]
+    end
+    Shell --> Core
+```
 
 ## Project Structure
 
@@ -93,7 +111,7 @@ type.
 src/iqscope/
 ├── types.py               # shared type aliases (IQArray, RealArray), units
 ├── errors.py               # exception hierarchy
-├── io/                      # raw formats → complex64, sample-rate/metadata
+├── io/                      # raw formats → complex64, sample rate / metadata
 ├── synth/                   # synthetic signal generator (ground truth for tests)
 ├── spectral/                # window functions, FFT/PSD, spectrogram
 ├── detect/                  # noise floor, peak detection, parameter estimation
@@ -103,8 +121,8 @@ src/iqscope/
 └── cli.py                    # thin CLI adapter
 
 tests/
-├── unit/                     # per-module unit tests
-├── property/                  # Hypothesis-based invariant tests
+├── unit/                     # unit tests for individual modules
+├── property/                  # Hypothesis based invariant tests
 └── integration/                # full pipeline: generator → analysis → result
 ```
 
@@ -112,16 +130,16 @@ tests/
 
 Three layers, all run via `pytest`:
 
-1. **Unit tests** — individual functions against analytically known results
+1. **Unit tests**: individual functions against analytically known results
    (e.g. an FFT of a pure sine must show a single peak at the expected bin).
-2. **Property tests** ([Hypothesis](https://hypothesis.readthedocs.io/)) —
-   invariants over randomly generated inputs (Parseval's theorem, linearity
-   of the spectrum, decimation-by-1 is the identity, a FIR low-pass can't
-   increase signal energy).
-3. **Integration tests against ground truth** — the synthetic generator
+2. **Property tests** ([Hypothesis](https://hypothesis.readthedocs.io/)):
+   invariants over randomly generated inputs. Parseval's theorem, linearity
+   of the spectrum, decimating by a factor of one is the identity operation,
+   and an FIR lowpass filter cannot increase signal energy.
+3. **Integration tests against ground truth**: the synthetic generator
    produces a signal with a known SNR / frequency offset / bandwidth, and the
    estimate from the analysis pipeline is checked against that known value.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
