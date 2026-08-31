@@ -1,6 +1,7 @@
 # iqscope
 
-[![CI](https://img.shields.io/github/actions/workflow/status/fgulde/iq-signal-analyzer/ci.yml?branch=master&label=CI)](https://github.com/fgulde/iq-signal-analyzer/actions/workflows/ci.yml)
+[![Build & Test](https://img.shields.io/github/actions/workflow/status/fgulde/iq-signal-analyzer/build-test.yml?branch=master&label=Build%20%26%20Test)](https://github.com/fgulde/iq-signal-analyzer/actions/workflows/build-test.yml)
+[![Code Coverage](https://img.shields.io/github/actions/workflow/status/fgulde/iq-signal-analyzer/coverage.yml?branch=master&label=Code%20Coverage)](https://github.com/fgulde/iq-signal-analyzer/actions/workflows/coverage.yml)
 [![Python](https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![codecov](https://codecov.io/gh/fgulde/iq-signal-analyzer/graph/badge.svg)](https://codecov.io/gh/fgulde/iq-signal-analyzer)
 [![Last commit](https://img.shields.io/github/last-commit/fgulde/iq-signal-analyzer)](https://github.com/fgulde/iq-signal-analyzer/commits/master)
@@ -44,6 +45,7 @@ the detected signals (center frequency, bandwidth, SNR), and a demodulated `.wav
 - **Linting, formatting:** ruff
 - **Type checking:** mypy (`--strict`)
 - **Git hooks:** pre-commit
+- **Task runner:** [just](https://github.com/casey/just)
 - **CI:** GitHub Actions
 
 ## Quick Start
@@ -52,17 +54,20 @@ the detected signals (center frequency, bandwidth, SNR), and a demodulated `.wav
 git clone https://github.com/fgulde/iq-signal-analyzer.git
 cd iq-signal-analyzer
 
-uv sync --all-groups
-uv run pre-commit install
+just setup
 ```
 
-Run the quality gates locally:
+Run the quality gates locally (mirrors the CI workflows):
 
 ```bash
-uv run ruff check .
-uv run mypy src tests
-uv run pytest
+just lint        # ruff check + format --check
+just typecheck    # mypy --strict
+just test          # pytest + coverage
+just check          # lint + typecheck + test
 ```
+
+`just --list` shows every available recipe. Without `just`, the equivalent
+`uv run ...` commands work too — see the [justfile](justfile).
 
 The CLI entry point (`iqscope`) exists but has no commands wired up yet —
 that lands in Phase 7.

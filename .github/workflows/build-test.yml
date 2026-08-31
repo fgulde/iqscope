@@ -1,4 +1,4 @@
-name: CI
+name: Build & Test
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,10 +16,11 @@ jobs:
           enable-cache: true
       - run: uv python install 3.13
       - run: uv sync --all-groups
-      - run: uv run ruff check .
-      - run: uv run ruff format --check .
+      - uses: extractions/setup-just@v2
+      - run: just lint
 
   typecheck:
+    name: Type Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,9 +29,24 @@ jobs:
           enable-cache: true
       - run: uv python install 3.13
       - run: uv sync --all-groups
-      - run: uv run mypy src tests
+      - uses: extractions/setup-just@v2
+      - run: just typecheck
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - run: uv python install 3.13
+      - run: uv sync --all-groups
+      - uses: extractions/setup-just@v2
+      - run: just build
 
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,13 +55,5 @@ jobs:
           enable-cache: true
       - run: uv python install 3.13
       - run: uv sync --all-groups
-      - run: uv run pytest --cov-report=xml
-      - uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage.xml
+      - uses: extractions/setup-just@v2
+      - run: just test
