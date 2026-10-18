@@ -1,7 +1,7 @@
 [project]
 name = "iqscope"
 version = "0.1.0"
-description = "CLI-Werkzeug zur Analyse und Demodulation von IQ-Aufnahmen"
+description = "Command line tool for analyzing and demodulating IQ recordings"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
@@ -63,7 +63,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["ARG", "S101"]
+"tests/**" = ["ARG"]
 
 [tool.ruff.format]
 quote-style = "double"
