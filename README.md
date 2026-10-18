@@ -22,15 +22,16 @@ the detected signals (center frequency, bandwidth, SNR), and a demodulated `.wav
 
 ## Current Status
 
-**Early stage: project scaffold only, no signal processing functionality yet.**
+**Early stage: raw IQ files can be read; no signal processing functionality yet.**
 
 ### Already Implemented
 
 - Phase 0: project scaffold (`pyproject.toml`, tooling, CI, module skeleton)
+- Phase 1: IQ reader (`cu8`, `ci8`, `ci16_le`, `cf32_le`, `cf64_le` → normalized
+  `complex64`, format inference from file suffix, windowed reads)
 
 ### Planned
 
-- Phase 1: IQ reader
 - Phase 2: synthetic signal generator
 - Phase 3: spectral analysis
 - Phase 4: signal detection & parameter estimation
