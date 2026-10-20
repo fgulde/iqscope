@@ -1,4 +1,4 @@
-"""Raw IQ formats → complex64, with windowed reads for large files."""
+"""Raw IQ formats -> complex64, with windowed reads for large files."""
 
 from dataclasses import dataclass
 from pathlib import Path
