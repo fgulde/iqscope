@@ -33,5 +33,9 @@ coverage:
 build:
 	uv build
 
+# Tag the current commit as the next release (the tag is the version): just release patch|minor ["message"]
+release part message="":
+	uv run python scripts/release.py {{part}} "{{message}}"
+
 # Run everything CI runs
 check: lint typecheck test
