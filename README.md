@@ -43,7 +43,7 @@ the detected signals (center frequency, bandwidth, SNR), and a demodulated `.wav
 
 - **Language:** Python 3.13
 - **Package Manager:** uv
-- **Build backend:** hatchling
+- **Build backend:** hatchling, with hatch-vcs (package version is derived from the git tag)
 - **Libraries:**
   - **Numerics:** NumPy, SciPy
   - **Plotting:** Matplotlib

@@ -1,6 +1,6 @@
 [project]
 name = "iqscope"
-version = "0.2.0"
+dynamic = ["version"]
 description = "Command line tool for analyzing and demodulating IQ recordings"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -16,11 +16,16 @@ dependencies = [
 iqscope = "iqscope.cli:app"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.uv]
 link-mode = "copy"
+# The version comes from the git tag (hatch-vcs)
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/iqscope"]
