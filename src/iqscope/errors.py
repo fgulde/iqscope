@@ -1,4 +1,7 @@
-"""Project exception hierarchy."""
+"""Project exception hierarchy.
+
+Callers can handle every intentional error with a single ``except IQScopeError``.
+"""
 
 __all__ = ["IQFormatError", "IQScopeError", "MetadataError"]
 
@@ -8,7 +11,7 @@ class IQScopeError(Exception):
 
 
 class IQFormatError(IQScopeError):
-    """Raw IQ data does not match its declared format (size, shape, suffix)."""
+    """Raw IQ data does not match its declared format (size, shape, suffix, read window)."""
 
 
 class MetadataError(IQScopeError):

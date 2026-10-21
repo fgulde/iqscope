@@ -51,6 +51,7 @@ select = [
     "W",   # pycodestyle warnings
     "F",   # pyflakes
     "I",   # isort
+    "D",   # pydocstyle
     "N",   # pep8-naming
     "UP",  # pyupgrade
     "B",   # flake8-bugbear
@@ -67,8 +68,11 @@ ignore = [
     "N999", # module names other than the project's own naming
 ]
 
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["ARG"]
+"tests/**" = ["ARG", "D"]
 
 [tool.ruff.format]
 quote-style = "double"

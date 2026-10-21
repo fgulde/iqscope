@@ -14,6 +14,11 @@ TAG_PATTERN = re.compile(r"v(\d+)\.(\d+)\.(\d+)")
 
 
 def git(*args: str) -> str:
+    """Run a git command and return its stripped stdout; exit with git's error on failure.
+
+    Args:
+        *args: Command line arguments for git.
+    """
     result = subprocess.run(["git", *args], capture_output=True, text=True, check=False)
     if result.returncode != 0:
         sys.exit(f"git {' '.join(args)} failed: {result.stderr.strip()}")
@@ -21,6 +26,12 @@ def git(*args: str) -> str:
 
 
 def next_tag(latest: str, part: str) -> str:
+    """Return the tag following ``latest``; exit if ``latest`` is not ``vX.Y.Z``.
+
+    Args:
+        latest: Current release tag.
+        part: ``"minor"`` or ``"patch"``.
+    """
     match = TAG_PATTERN.fullmatch(latest)
     if match is None:
         sys.exit(f"latest tag {latest!r} is not of the form vX.Y.Z")
@@ -31,6 +42,13 @@ def next_tag(latest: str, part: str) -> str:
 
 
 def main(argv: list[str]) -> None:
+    """Create the next release tag locally after checking the repository state.
+
+    Exits unless the branch is ``master``, the working tree is clean and ``HEAD`` is untagged.
+
+    Args:
+        argv: ``patch`` or ``minor``, optionally followed by the tag message.
+    """
     if not argv or argv[0] not in ("patch", "minor") or len(argv) > 2:
         sys.exit(__doc__)
     part = argv[0]
